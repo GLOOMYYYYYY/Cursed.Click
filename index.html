@@ -6,6 +6,54 @@
     <title>CursedClique Art Collective</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .social-icon {
+            cursor: pointer;
+        }
+        
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 15px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .audio-player audio {
+            width: 200px;
+        }
+
+        .play-button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Metal Mania', cursive;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+
+        .play-button.playing {
+            background: #00ff00;
+        }
+
+        .play-button.playing:hover {
+            background: #00cc00;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -144,7 +192,105 @@
         <div class="floating-star"></div>
         <div class="floating-star"></div>
         <div class="floating-star"></div>
+        <div class="floating-star"></div>
+        <div class="floating-star"></div>
+        <div class="floating-star"></div>
+        <div class="floating-star"></div>
+        <div class="floating-star"></div>
+        <div class="floating-star"></div>
+        <div class="floating-star"></div>
+        <div class="floating-star"></div>
     </div>
-    <script src="script.js"></script>
+    <div class="audio-player">
+        <button class="play-button" id="playButton">🔊 Play Music</button>
+        <audio id="bgMusic" loop>
+            <source src="sound/628252__bloodpixelhero__horror-ambient.wav" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    <script>
+        // Background music
+        const bgMusic = document.getElementById('bgMusic');
+        const playButton = document.getElementById('playButton');
+        bgMusic.volume = 0.2; // Set volume to 20%
+        let isPlaying = false;
+        
+        // Function to stop background music
+        function stopBackgroundMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                playButton.textContent = '🔊 Play Music';
+                playButton.classList.remove('playing');
+                isPlaying = false;
+            }
+        }
+        
+        // Play button functionality
+        playButton.addEventListener('click', () => {
+            if (isPlaying) {
+                stopBackgroundMusic();
+            } else {
+                // Stop any playing videos first
+                document.querySelectorAll('.video-item iframe').forEach(iframe => {
+                    if (iframe.src.includes('youtube.com')) {
+                        iframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+                    }
+                });
+                // Stop any playing Spotify
+                document.querySelectorAll('.spotify-embed iframe').forEach(iframe => {
+                    iframe.contentWindow.postMessage('{"command":"pause"}', '*');
+                });
+                bgMusic.play();
+                playButton.textContent = '🔈 Stop Music';
+                playButton.classList.add('playing');
+                isPlaying = true;
+            }
+        });
+
+        // Stop background music when videos start playing
+        document.querySelectorAll('.video-item iframe').forEach(iframe => {
+            iframe.addEventListener('load', () => {
+                iframe.contentWindow.addEventListener('message', (event) => {
+                    if (event.data && event.data.event === 'onStateChange') {
+                        if (event.data.info === 1) { // Video started playing
+                            stopBackgroundMusic();
+                            // Stop Spotify
+                            document.querySelectorAll('.spotify-embed iframe').forEach(spotify => {
+                                spotify.contentWindow.postMessage('{"command":"pause"}', '*');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+        // Stop background music when Spotify starts playing
+        document.querySelectorAll('.spotify-embed iframe').forEach(iframe => {
+            iframe.addEventListener('load', () => {
+                iframe.contentWindow.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'SPOTIFY_PLAYBACK_STATE') {
+                        if (event.data.state && event.data.state.is_playing) {
+                            stopBackgroundMusic();
+                            // Stop YouTube videos
+                            document.querySelectorAll('.video-item iframe').forEach(youtube => {
+                                youtube.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+        // Social icon hover sound
+        document.querySelectorAll('.social-icon').forEach(icon => {
+            icon.addEventListener('mouseenter', () => {
+                const hoverSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
+                hoverSound.volume = 0.2;
+                hoverSound.play().catch(error => {
+                    console.log("Hover sound failed:", error);
+                });
+            });
+        });
+    </script>
 </body>
 </html> 
