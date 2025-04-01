@@ -126,6 +126,12 @@ nav a:hover {
     height: 300px;
     object-fit: cover;
     margin-bottom: 10px;
+    transition: all 0.1s ease;
+    filter: hue-rotate(0deg);
+}
+
+.merch-item img:hover {
+    animation: rainbow-hue 1s linear infinite, quiver 0.15s ease-in-out infinite;
 }
 
 .buy-btn {
@@ -193,6 +199,12 @@ nav a:hover {
     height: 250px;
     object-fit: cover;
     margin-bottom: 10px;
+    transition: all 0.1s ease;
+    filter: hue-rotate(0deg);
+}
+
+.art-item img:hover {
+    animation: rainbow-hue 1s linear infinite, quiver 0.15s ease-in-out infinite;
 }
 
 /* Footer */
@@ -481,4 +493,40 @@ footer {
     .90s-footer {
         font-size: 0.8em;
     }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes intense-shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-10px) rotate(-5deg); }
+    50% { transform: translateX(10px) rotate(5deg); }
+    75% { transform: translateX(-10px) rotate(-5deg); }
+}
+
+/* Image hover effects for ALL images */
+.merch-item img,
+.art-item img {
+    transition: all 0.1s ease;
+    filter: hue-rotate(0deg);
+}
+
+.merch-item img:hover,
+.art-item img:hover {
+    animation: rainbow-hue 1s linear infinite, quiver 0.15s ease-in-out infinite;
+}
+
+@keyframes rainbow-hue {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes quiver {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-1px); }
+    75% { transform: translateX(1px); }
 }
